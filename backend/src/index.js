@@ -10,6 +10,7 @@ import stockRoutes from './routes/stock.js';
 import salesRoutes from './routes/sales.js';
 import expensesRoutes from './routes/expenses.js';
 import dashboardRoutes from './routes/dashboard.js';
+import usersRoutes from './routes/users.js';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use('/api/stock', stockRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/expenses', expensesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/users', usersRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

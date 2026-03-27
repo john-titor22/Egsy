@@ -8,17 +8,22 @@ import {
   Receipt,
   X,
   Egg,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { cn } from '../lib/utils';
 
-const navItems = [
+const clientNavItems = [
   { to: '/', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
   { to: '/troupeaux', label: 'Troupeaux', icon: Bird },
   { to: '/production', label: 'Production', icon: ClipboardList },
   { to: '/stock', label: 'Stock', icon: Package },
   { to: '/ventes', label: 'Ventes', icon: ShoppingCart },
   { to: '/depenses', label: 'Dépenses', icon: Receipt },
+];
+
+const adminNavItems = [
+  { to: '/utilisateurs', label: 'Utilisateurs', icon: Users },
 ];
 
 export default function Sidebar({ onClose }) {
@@ -55,7 +60,7 @@ export default function Sidebar({ onClose }) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ to, label, icon: Icon, end }) => (
+        {(user?.role === 'ADMIN' ? adminNavItems : clientNavItems).map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}

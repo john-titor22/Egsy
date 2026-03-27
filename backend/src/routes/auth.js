@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
+import { authenticate, adminOnly } from '../middleware/auth.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -34,8 +35,8 @@ const generateTokens = (userId) => {
   return { accessToken, refreshToken };
 };
 
-// POST /api/auth/register
-router.post('/register', async (req, res, next) => {
+// POST /api/auth/register (admin only)
+router.post('/register', authenticate, adminOnly, async (req, res, next) => {
   try {
     const data = registerSchema.parse(req.body);
 
