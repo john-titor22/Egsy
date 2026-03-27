@@ -53,7 +53,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Serveur OeufAlHaouz démarré sur le port ${PORT}`);
+  console.log(`Serveur Egsy démarré sur le port ${PORT}`);
 });
 
 export default app;

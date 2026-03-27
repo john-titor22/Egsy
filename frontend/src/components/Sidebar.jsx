@@ -33,7 +33,7 @@ export default function Sidebar({ onClose }) {
             <Egg className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-bold text-gray-900 leading-tight">OeufAlHaouz</h1>
+            <h1 className="text-base font-bold text-gray-900 leading-tight">Egsy</h1>
             <p className="text-xs text-gray-500 leading-tight">Gestion avicole</p>
           </div>
         </div>
