@@ -41,7 +41,7 @@ export default function Utilisateurs() {
 
   const onSubmit = async (data) => {
     try {
-      const res = await api.post('/auth/register', data);
+      const res = await api.post('/users', data);
       setUsers(prev => [res.data, ...prev]);
       setShowModal(false);
       reset();

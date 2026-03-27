@@ -23,6 +23,12 @@ function AdminRoute({ children }) {
   return children;
 }
 
+function AdminIndexRedirect({ children }) {
+  const { user } = useAuth();
+  if (user?.role === 'ADMIN') return <Navigate to="/utilisateurs" replace />;
+  return children;
+}
+
 function PublicRoute({ children }) {
   const { user } = useAuth();
   if (user) return <Navigate to="/" replace />;
@@ -37,7 +43,7 @@ export default function App() {
         path="/"
         element={<ProtectedRoute><Layout /></ProtectedRoute>}
       >
-        <Route index element={<Dashboard />} />
+        <Route index element={<AdminIndexRedirect><Dashboard /></AdminIndexRedirect>} />
         <Route path="troupeaux" element={<Troupeaux />} />
         <Route path="production" element={<Production />} />
         <Route path="stock" element={<Stock />} />
