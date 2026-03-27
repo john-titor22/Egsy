@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("OWNER")
+  farmId    String?
+  farm      Farm?    @relation(fields: [farmId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Farm {
+  id         String       @id @default(cuid())
+  name       String
+  location   String
+  ownerId    String
+  users      User[]
+  flocks     Flock[]
+  stockItems StockItem[]
+  sales      Sale[]
+  expenses   Expense[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Flock {
+  id                String             @id @default(cuid())
+  name              String
+  farmId            String
+  farm              Farm               @relation(fields: [farmId], references: [id])
+  breed             String
+  quantity          Int
+  arrivalDate       DateTime
+  purpose           FlockPurpose       @default(OEUF)
+  status            FlockStatus        @default(ACTIF)
+  batchNumber       String?
+  productionRecords ProductionRecord[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+enum FlockPurpose {
+  CHAIR
+  OEUF
+}
+
+enum FlockStatus {
+  ACTIF
+  TERMINE
+}
+
+model ProductionRecord {
+  id             String   @id @default(cuid())
+  flockId        String
+  flock          Flock    @relation(fields: [flockId], references: [id])
+  date           DateTime
+  eggsCollected  Int      @default(0)
+  mortalityCount Int      @default(0)
+  feedConsumed   Float    @default(0)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model StockItem {
+  id             String          @id @default(cuid())
+  farmId         String
+  farm           Farm            @relation(fields: [farmId], references: [id])
+  name           String
+  category       StockCategory   @default(AUTRE)
+  quantity       Float           @default(0)
+  unit           String
+  unitPrice      Float           @default(0)
+  alertThreshold Float           @default(0)
+  movements      StockMovement[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+enum StockCategory {
+  ALIMENT
+  MEDICAMENT
+  EQUIPEMENT
+  AUTRE
+}
+
+model StockMovement {
+  id          String        @id @default(cuid())
+  stockItemId String
+  stockItem   StockItem     @relation(fields: [stockItemId], references: [id])
+  type        MovementType
+  quantity    Float
+  reason      String?
+  date        DateTime      @default(now())
+  createdAt   DateTime      @default(now())
+}
+
+enum MovementType {
+  ENTREE
+  SORTIE
+}
+
+model Sale {
+  id            String        @id @default(cuid())
+  farmId        String
+  farm          Farm          @relation(fields: [farmId], references: [id])
+  clientName    String
+  clientPhone   String?
+  date          DateTime
+  totalAmount   Float
+  paymentStatus PaymentStatus @default(EN_ATTENTE)
+  notes         String?
+  items         SaleItem[]
+  invoice       Invoice?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  PAYE
+  EN_ATTENTE
+  PARTIEL
+}
+
+model SaleItem {
+  id          String @id @default(cuid())
+  saleId      String
+  sale        Sale   @relation(fields: [saleId], references: [id])
+  description String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  farmId      String
+  farm        Farm     @relation(fields: [farmId], references: [id])
+  category    String
+  description String
+  amount      Float
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  saleId        String   @unique
+  sale          Sale     @relation(fields: [saleId], references: [id])
+  invoiceNumber String   @unique
+  issuedAt      DateTime @default(now())
+  dueDate       DateTime
+}
