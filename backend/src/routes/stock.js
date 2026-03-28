@@ -1,7 +1,9 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { authenticate, requireFarm } from '../middleware/auth.js';
+import { authenticate, requireFarm, requireRole } from '../middleware/auth.js';
+
+const ownerOnly = requireRole('OWNER');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -44,7 +46,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // POST /api/stock
-router.post('/', async (req, res, next) => {
+router.post('/', ownerOnly, async (req, res, next) => {
   try {
     const data = stockItemSchema.parse(req.body);
     const item = await prisma.stockItem.create({
@@ -81,7 +83,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // PUT /api/stock/:id
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', ownerOnly, async (req, res, next) => {
   try {
     const data = stockItemSchema.partial().parse(req.body);
     const existing = await prisma.stockItem.findFirst({
@@ -104,7 +106,7 @@ router.put('/:id', async (req, res, next) => {
 });
 
 // DELETE /api/stock/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ownerOnly, async (req, res, next) => {
   try {
     const existing = await prisma.stockItem.findFirst({
       where: { id: req.params.id, farmId: req.user.farmId },
@@ -121,7 +123,7 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 // POST /api/stock/:id/movement
-router.post('/:id/movement', async (req, res, next) => {
+router.post('/:id/movement', ownerOnly, async (req, res, next) => {
   try {
     const data = movementSchema.parse(req.body);
     const item = await prisma.stockItem.findFirst({

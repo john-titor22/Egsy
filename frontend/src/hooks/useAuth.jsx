@@ -56,8 +56,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const updateUser = useCallback((userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(prev => {
+      const merged = { ...prev, ...userData };
+      localStorage.setItem('user', JSON.stringify(merged));
+      return merged;
+    });
   }, []);
 
   return (

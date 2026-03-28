@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Bird } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +21,8 @@ const schema = z.object({
 });
 
 export default function Troupeaux() {
+  const { user } = useAuth();
+  const canManage = user?.role === 'OWNER';
   const [flocks, setFlocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -120,7 +123,7 @@ export default function Troupeaux() {
       ),
     },
     { key: 'arrivalDate', label: 'Date d\'arrivée', render: (v) => formatDate(v) },
-    {
+    ...(canManage ? [{
       key: 'id',
       label: 'Actions',
       render: (v, row) => (
@@ -139,7 +142,7 @@ export default function Troupeaux() {
           </button>
         </div>
       ),
-    },
+    }] : []),
   ];
 
   return (
@@ -149,11 +152,11 @@ export default function Troupeaux() {
           <h1 className="text-2xl font-bold text-gray-900">Troupeaux</h1>
           <p className="text-gray-500 text-sm mt-1">Gérez vos lots de volailles</p>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+        {canManage && <button onClick={openCreate} className="btn-primary flex items-center gap-2">
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Nouveau troupeau</span>
           <span className="sm:hidden">Ajouter</span>
-        </button>
+        </button>}
       </div>
 
       {error && (

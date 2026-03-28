@@ -1,7 +1,9 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { authenticate, requireFarm } from '../middleware/auth.js';
+import { authenticate, requireFarm, requireRole } from '../middleware/auth.js';
+
+const ownerOnly = requireRole('OWNER');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -77,7 +79,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // DELETE /api/expenses/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ownerOnly, async (req, res, next) => {
   try {
     const existing = await prisma.expense.findFirst({
       where: { id: req.params.id, farmId: req.user.farmId },

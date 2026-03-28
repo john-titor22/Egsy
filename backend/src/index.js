@@ -11,6 +11,7 @@ import salesRoutes from './routes/sales.js';
 import expensesRoutes from './routes/expenses.js';
 import dashboardRoutes from './routes/dashboard.js';
 import usersRoutes from './routes/users.js';
+import farmUsersRoutes from './routes/farm-users.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/sales', salesRoutes);
 app.use('/api/expenses', expensesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/farm-users', farmUsersRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

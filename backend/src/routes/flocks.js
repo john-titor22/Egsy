@@ -1,7 +1,9 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { authenticate, requireFarm } from '../middleware/auth.js';
+import { authenticate, requireFarm, requireRole } from '../middleware/auth.js';
+
+const ownerOnly = requireRole('OWNER');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -41,7 +43,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // POST /api/flocks
-router.post('/', async (req, res, next) => {
+router.post('/', ownerOnly, async (req, res, next) => {
   try {
     const data = flockSchema.parse(req.body);
     const flock = await prisma.flock.create({
@@ -82,7 +84,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // PUT /api/flocks/:id
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', ownerOnly, async (req, res, next) => {
   try {
     const data = flockSchema.partial().parse(req.body);
     const existing = await prisma.flock.findFirst({
@@ -111,7 +113,7 @@ router.put('/:id', async (req, res, next) => {
 });
 
 // DELETE /api/flocks/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ownerOnly, async (req, res, next) => {
   try {
     const existing = await prisma.flock.findFirst({
       where: { id: req.params.id, farmId: req.user.farmId },

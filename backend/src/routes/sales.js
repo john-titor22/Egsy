@@ -1,7 +1,9 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { authenticate, requireFarm } from '../middleware/auth.js';
+import { authenticate, requireFarm, requireRole } from '../middleware/auth.js';
+
+const ownerOnly = requireRole('OWNER');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -103,7 +105,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // PUT /api/sales/:id/status
-router.put('/:id/status', async (req, res, next) => {
+router.put('/:id/status', ownerOnly, async (req, res, next) => {
   try {
     const { paymentStatus } = req.body;
     if (!['PAYE', 'EN_ATTENTE', 'PARTIEL'].includes(paymentStatus)) {
@@ -129,7 +131,7 @@ router.put('/:id/status', async (req, res, next) => {
 });
 
 // POST /api/sales/:id/invoice
-router.post('/:id/invoice', async (req, res, next) => {
+router.post('/:id/invoice', ownerOnly, async (req, res, next) => {
   try {
     const sale = await prisma.sale.findFirst({
       where: { id: req.params.id, farmId: req.user.farmId },

@@ -50,9 +50,12 @@ export const requireFarm = (req, res, next) => {
   next();
 };
 
-export const adminOnly = (req, res, next) => {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+export const requireRole = (...roles) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Non authentifié' });
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Accès non autorisé pour ce rôle' });
   }
   next();
 };
+
+export const adminOnly = requireRole('ADMIN');

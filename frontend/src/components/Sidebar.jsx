@@ -9,11 +9,12 @@ import {
   X,
   Egg,
   Users,
+  Users2,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { cn } from '../lib/utils';
 
-const clientNavItems = [
+const baseNavItems = [
   { to: '/', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
   { to: '/troupeaux', label: 'Troupeaux', icon: Bird },
   { to: '/production', label: 'Production', icon: ClipboardList },
@@ -22,12 +23,24 @@ const clientNavItems = [
   { to: '/depenses', label: 'Dépenses', icon: Receipt },
 ];
 
+const ownerNavItems = [
+  ...baseNavItems,
+  { to: '/equipe', label: 'Mon équipe', icon: Users2 },
+];
+
 const adminNavItems = [
   { to: '/utilisateurs', label: 'Utilisateurs', icon: Users },
 ];
 
+const NAV_BY_ROLE = {
+  ADMIN: adminNavItems,
+  OWNER: ownerNavItems,
+  WORKER: baseNavItems,
+};
+
 export default function Sidebar({ onClose }) {
   const { user } = useAuth();
+  const navItems = NAV_BY_ROLE[user?.role] ?? baseNavItems;
 
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 shadow-lg">
@@ -60,7 +73,7 @@ export default function Sidebar({ onClose }) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {(user?.role === 'ADMIN' ? adminNavItems : clientNavItems).map(({ to, label, icon: Icon, end }) => (
+        {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
@@ -81,7 +94,7 @@ export default function Sidebar({ onClose }) {
         ))}
       </nav>
 
-      {/* User info */}
+      {/* User info + role badge */}
       <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
@@ -89,10 +102,15 @@ export default function Sidebar({ onClose }) {
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
             </span>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-gray-800 truncate">{user?.name}</p>
             <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           </div>
+          {user?.role === 'WORKER' && (
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+              Employé
+            </span>
+          )}
         </div>
       </div>
     </div>

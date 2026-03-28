@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Package, ArrowUp, ArrowDown, Pencil, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Package, ArrowUp, Pencil, Trash2, AlertTriangle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -33,6 +34,8 @@ const CATEGORY_COLORS = {
 };
 
 export default function Stock() {
+  const { user } = useAuth();
+  const canManage = user?.role === 'OWNER';
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [itemModal, setItemModal] = useState(false);
@@ -135,7 +138,7 @@ export default function Stock() {
     )},
     { key: 'unitPrice', label: 'Prix unitaire', render: (v) => formatCurrency(v) },
     { key: 'alertThreshold', label: 'Seuil alerte', render: (v, row) => v > 0 ? `${v} ${row.unit}` : '-' },
-    { key: 'id', label: 'Actions', render: (v, row) => (
+    ...(canManage ? [{ key: 'id', label: 'Actions', render: (v, row) => (
       <div className="flex gap-1">
         <button onClick={(e) => { e.stopPropagation(); openMovement(row); }}
           className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 text-xs font-medium flex items-center gap-1 border border-green-200">
@@ -150,7 +153,7 @@ export default function Stock() {
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
-    )},
+    )}] : []),
   ];
 
   return (
@@ -160,11 +163,13 @@ export default function Stock() {
           <h1 className="text-2xl font-bold text-gray-900">Stock</h1>
           <p className="text-gray-500 text-sm mt-1">Gestion des stocks et approvisionnements</p>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">Nouvel article</span>
-          <span className="sm:hidden">Ajouter</span>
-        </button>
+        {canManage && (
+          <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Nouvel article</span>
+            <span className="sm:hidden">Ajouter</span>
+          </button>
+        )}
       </div>
 
       {error && (

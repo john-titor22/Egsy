@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Receipt, Trash2 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +22,8 @@ const schema = z.object({
 const PIE_COLORS = ['#f97316', '#3b82f6', '#10b981', '#a855f7', '#ef4444', '#f59e0b', '#06b6d4', '#84cc16', '#ec4899', '#6b7280'];
 
 export default function Depenses() {
+  const { user } = useAuth();
+  const canDelete = user?.role === 'OWNER';
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,12 +99,12 @@ export default function Depenses() {
     { key: 'description', label: 'Description', render: (v) => <span className="font-medium">{v}</span> },
     { key: 'amount', label: 'Montant', render: (v) => <span className="font-bold text-red-600">{formatCurrency(v)}</span> },
     { key: 'date', label: 'Date', render: (v) => formatDate(v) },
-    { key: 'id', label: 'Actions', render: (v) => (
+    ...(canDelete ? [{ key: 'id', label: 'Actions', render: (v) => (
       <button onClick={(e) => { e.stopPropagation(); setDeleteId(v); }}
         className="p-1.5 rounded-lg hover:bg-red-50 text-red-500">
         <Trash2 className="w-4 h-4" />
       </button>
-    )},
+    )}] : []),
   ];
 
   return (
