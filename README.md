@@ -1,4 +1,4 @@
-# OeufAlHaouz - Gestion de Ferme Avicole
+# Eggsy - Gestion de Ferme Avicole
 
 Application SaaS complète pour la gestion de fermes avicoles. Interface entièrement en français.
 
@@ -12,7 +12,7 @@ Application SaaS complète pour la gestion de fermes avicoles. Interface entièr
 ## Structure du projet
 
 ```
-OeufAlHaouz/
+Eggsy/
 ├── frontend/          # Application React
 ├── backend/           # API Node.js/Express
 └── README.md
@@ -63,7 +63,7 @@ L'application est disponible sur http://localhost:5173
 ### backend/.env
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/oeufalhaouz"
+DATABASE_URL="postgresql://user:password@localhost:5432/eggsy"
 JWT_SECRET="votre-secret-jwt"
 JWT_REFRESH_SECRET="votre-refresh-secret"
 PORT=3001
